@@ -1,0 +1,12 @@
+# Development / CI only.
+#
+# On the Raspberry Pi do NOT pip install these. Use the distribution packages
+# so picamera2 links against the system libcamera:
+#
+#   sudo apt install -y --no-install-recommends \
+#       python3-picamera2 python3-flask python3-waitress python3-pil
+#
+flask>=2.2
+waitress>=2.1
+pillow>=9.0
+pytest>=7.0

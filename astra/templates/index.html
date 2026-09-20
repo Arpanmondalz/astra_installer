@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Astra</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='astra.css') }}">
+</head>
+<body>
+<header>
+  <span class="brand">ASTRA</span>
+  <span id="status" class="pill pill-wait">connecting</span>
+</header>
+
+<main class="container">
+  <div class="viewer">
+    <img id="view" alt="Live telescope view">
+    <div id="overlay" class="overlay">waiting for the camera&hellip;</div>
+  </div>
+
+  <div class="presets" id="presets"></div>
+
+  <section class="controls">
+    <div class="group">
+      <div class="row">
+        <span>Auto exposure</span>
+        <label class="switch">
+          <input type="checkbox" id="auto_exposure">
+          <span class="track"></span>
+        </label>
+      </div>
+      <p class="hint">Spot metering keeps a bright Moon or planet correctly exposed against a black sky.</p>
+    </div>
+
+    <div class="group">
+      <div class="row">
+        <span>Mono</span>
+        <label class="switch">
+          <input type="checkbox" id="mono">
+          <span class="track"></span>
+        </label>
+      </div>
+      <p class="hint">Removing the lens also removed the IR filter. Mono avoids the pink cast.</p>
+    </div>
+
+    <div class="group" id="group_exposure">
+      <label class="label" for="exposure_us">Exposure <span class="value" id="exposure_us_val"></span></label>
+      <input type="range" id="exposure_us" min="0" max="1000" step="1">
+    </div>
+
+    <div class="group" id="group_gain">
+      <label class="label" for="gain">Gain <span class="value" id="gain_val"></span></label>
+      <input type="range" id="gain" min="1" max="32" step="0.1">
+    </div>
+
+    <div class="group">
+      <label class="label" for="ev">Brightness <span class="value" id="ev_val"></span></label>
+      <input type="range" id="ev" min="-4" max="4" step="0.1">
+    </div>
+
+    <div class="group">
+      <label class="label" for="zoom">Sensor zoom <span class="value" id="zoom_val"></span></label>
+      <input type="range" id="zoom" min="1" max="8" step="0.1">
+    </div>
+
+    <div class="group">
+      <label class="label" for="metering">Metering</label>
+      <select id="metering">
+        <option value="spot">Spot &mdash; small bright target</option>
+        <option value="centre">Centre weighted</option>
+        <option value="matrix">Matrix &mdash; whole frame</option>
+      </select>
+    </div>
+
+    <div class="group">
+      <div class="row">
+        <span>Horizontal flip</span>
+        <label class="switch">
+          <input type="checkbox" id="hflip">
+          <span class="track"></span>
+        </label>
+      </div>
+      <div class="row">
+        <span>Vertical flip</span>
+        <label class="switch">
+          <input type="checkbox" id="vflip">
+          <span class="track"></span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <details class="advanced">
+    <summary>Advanced</summary>
+    <div class="controls">
+      <div class="group">
+        <div class="row">
+          <span>Auto white balance</span>
+          <label class="switch">
+            <input type="checkbox" id="awb_auto">
+            <span class="track"></span>
+          </label>
+        </div>
+      </div>
+      <div class="group" id="group_red">
+        <label class="label" for="red_gain">Red gain <span class="value" id="red_gain_val"></span></label>
+        <input type="range" id="red_gain" min="0.5" max="8" step="0.05">
+      </div>
+      <div class="group" id="group_blue">
+        <label class="label" for="blue_gain">Blue gain <span class="value" id="blue_gain_val"></span></label>
+        <input type="range" id="blue_gain" min="0.5" max="8" step="0.05">
+      </div>
+      <div class="group">
+        <div class="row">
+          <span>Continuous stream (MJPEG)</span>
+          <label class="switch">
+            <input type="checkbox" id="mjpeg">
+            <span class="track"></span>
+          </label>
+        </div>
+        <p class="hint">Smoother up close. Snapshot mode is more reliable at range.</p>
+      </div>
+    </div>
+  </details>
+
+  <div class="buttons">
+    <button type="button" id="capture" class="btn btn-capture">Capture</button>
+    <button type="button" id="capture_full" class="btn">Capture full 5&nbsp;MP</button>
+    <button type="button" id="reset" class="btn btn-reset">Reset</button>
+  </div>
+
+  <p class="footer" id="footer"></p>
+</main>
+
+<script src="{{ url_for('static', filename='astra.js') }}"></script>
+</body>
+</html>
