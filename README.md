@@ -1,15 +1,12 @@
 # Astra
 
-Turn a Raspberry Pi Zero 2 W and a 114 mm Newtonian telescope into a camera you
-can watch and control from your phone. No eyepiece, no cables — open a web page,
-point the telescope, tap a preset, save the picture.
+This repo contains everything you need to setup a raspberry pi for the Astra DIY telescope. 
 
-Lightweight by design: it runs on Raspberry Pi OS Lite and needs very little
-disk or memory.
+For build instructions, read this article: https://www.instructables.com/Astra-a-Powerful-Smart-Telescope
 
 ---
 
-## 1. What you need
+## 1. What you need for the software setup
 
 **Electronics**
 
@@ -36,7 +33,7 @@ run hot and slow itself down.
 Open Raspberry Pi Imager and set:
 
 - **Device:** Raspberry Pi Zero 2 W
-- **Operating System:** Raspberry Pi OS (other) → **Raspberry Pi OS Lite (32-bit)**
+- **Operating System:** Raspberry Pi OS (other) > **Raspberry Pi OS Lite (32-bit)**
 - **Storage:** your microSD card
 
 > Choose **32-bit**, not 64-bit. On a Pi Zero 2 W it uses noticeably less disk
@@ -45,9 +42,9 @@ Open Raspberry Pi Imager and set:
 Before clicking **Write**, click the gear icon / **Edit Settings** and fill in:
 
 - **Hostname:** `astra`
-- **Enable SSH** — with password authentication
-- **Username and password** — write these down
-- **Wi-Fi SSID and password** — your normal home Wi-Fi, just for the setup
+- **Enable SSH** with password authentication
+- **Username and password** 
+- **Wi-Fi SSID and password** 
 - **Locale, keyboard, timezone**
 
 Click **Write** and wait. When it finishes, eject the card, put it in the Pi,
@@ -80,9 +77,6 @@ sudo apt clean
 sudo reboot
 ```
 
-`sudo apt clean` at the end matters on a small card — it throws away the
-downloaded package files, which can easily be a few hundred megabytes.
-
 Wait a minute, then SSH back in.
 
 ---
@@ -91,7 +85,7 @@ Wait a minute, then SSH back in.
 
 Pick **one** of these.
 
-**Option A — copy from your computer**
+**Option A: copy from your computer**
 
 Use this if you have edited the files locally. Open a *new* terminal on your
 computer, in the folder that contains `astra/`, `deploy/` and `tools/`:
@@ -106,10 +100,7 @@ Then in your SSH session:
 mv ~/astra-src ~/astra
 ```
 
-> Copy only those folders. Do **not** copy `.venv` — it is for testing on your
-> computer and is useless (and large) on the Pi.
-
-**Option B — download it straight onto the Pi (easiest)**
+**Option B: download it straight onto the Pi (easiest)**
 
 Run these in your SSH session. No git required:
 
@@ -131,7 +122,7 @@ sudo apt install -y git
 git clone https://github.com/Arpanmondalz/astra_installer.git ~/astra
 ```
 
-**Option C — use the SD card.** Before the first boot, copy the folder into the
+**Option C: use the SD card.** Before the first boot, copy the folder into the
 small `bootfs` partition that Windows can see. Then on the Pi:
 
 ```bash
@@ -190,7 +181,7 @@ http://astra.local
 ```
 
 You should see the live view and the controls. If you have not focused the
-telescope yet, expect a white blur or blackness — that is normal.
+telescope yet, expect a white blur or blackness, that is normal.
 
 That is the whole everyday routine: switch on, wait, open the page.
 
@@ -222,7 +213,7 @@ different IP after a reboot. In your router's admin page, find the DHCP or
 and you can bookmark it or turn it into a QR code.
 
 > If you chose a hostname other than `astra` when flashing the card, use that
-> name instead — e.g. `http://mypi.local`.
+> name instead, e.g. `http://mypi.local`.
 
 ---
 
@@ -232,7 +223,7 @@ and you can bookmark it or turn it into a QR code.
 
 | Preset | Use it for |
 | --- | --- |
-| **Moon** | The Moon. Start here — it's by far the easiest target |
+| **Moon** | The Moon. Start here, it's by far the easiest target |
 | **Planets** | Jupiter, Saturn, Mars |
 | **Deep Sky** | Star clusters and nebulae |
 | **Daylight** | Daytime practice and focusing on a distant object |
@@ -243,21 +234,21 @@ slider to see the Moon.
 
 ### Controls
 
-- **Auto exposure** — leave this on for the Moon and planets. Turn it off only
+- **Auto exposure**: leave this on for the Moon and planets. Turn it off only
   for long deep-sky exposures.
-- **Brightness** — the one slider to reach for. Nudge it if the image is too
+- **Brightness**: the one slider to reach for. Nudge it if the image is too
   dark or washed out.
-- **Exposure / Gain** — only active when auto exposure is off. More gain means a
+- **Exposure / Gain**: only active when auto exposure is off. More gain means a
   brighter but grainier picture.
-- **Sensor zoom** — a real zoom on the camera chip, not a fake stretch. Use 3–4×
+- **Sensor zoom**: a real zoom on the camera chip, not a fake stretch. Use 3–4×
   to help you focus, then zoom back out.
-- **Mono** — black and white. Removing the camera lens also removed its infrared
+- **Mono**: black and white. Removing the camera lens also removed its infrared
   filter, which is what causes the pink tint. Mono avoids it and actually shows
   more detail on the Moon.
-- **Capture** — saves the picture you're looking at, straight to your phone.
-- **Capture full 5 MP** — a higher resolution shot. The preview pauses for a
+- **Capture**: saves the picture you're looking at, straight to your phone.
+- **Capture full 5 MP**: a higher resolution shot. The preview pauses for a
   couple of seconds.
-- **Advanced → Continuous stream** — smoother video when you are standing next
+- **Advanced → Continuous stream**: smoother video when you are standing next
   to the telescope, but less reliable at a distance. Off by default.
 
 ### Focusing
@@ -267,12 +258,12 @@ This is the part that trips everyone up.
 1. Do your first attempt **in daylight**, on something far away like a rooftop.
    Use the **Daylight** preset.
 2. Turn the focus knob **slowly**. A telescope goes from a shapeless blur to
-   sharp over a very small amount of travel — it is easy to spin straight past it.
+   sharp over a very small amount of travel, it is easy to spin straight past it.
 3. Set **Sensor zoom** to 3–4× while focusing. It's much easier to judge.
 4. At night, start with the Moon and the **Moon** preset.
 
-If you can't get it sharp at all, the mirror may need collimating — small
-adjustments on the three bolts behind the primary mirror.
+If you can't get it sharp at all, the mirror may need collimating (small
+adjustments on the three bolts behind the primary mirror)
 
 ---
 
@@ -317,7 +308,7 @@ sudo du -xh --max-depth=1 / | sort -h   # find what is using it
 | Preview is black | Run `python3 tools/doctor.py`. If it reports a mean pixel value under 2: the cover is on, the telescope is badly out of focus, or the exposure is too short |
 | Picture is pink | Turn on **Mono**, or adjust the red/blue gains under Advanced |
 | Preview freezes after sitting idle | Wi-Fi power saving. `iw dev wlan0 get power_save` should say `off` |
-| `astra.local` doesn't resolve | Use the IP address instead — see [If `astra.local` does not load](#if-astralocal-does-not-load). Android phones in particular don't handle `.local` names |
+| `astra.local` doesn't resolve | Use the IP address instead: see [If `astra.local` does not load](#if-astralocal-does-not-load). Android phones in particular don't handle `.local` names |
 | Address changed after a reboot | Reserve a fixed IP for `astra` in your router's DHCP settings |
 | Deep Sky exposure seems short | The OV5647's maximum exposure is modest. `doctor.py` prints the real limit; raise gain instead |
 | Out of disk space | `sudo apt clean`, then `sudo ./deploy/slim.sh` |
@@ -332,8 +323,28 @@ df -h /                          # free space
 ```
 
 ---
+### Optional but recommended: Safe Battery Disconnect (OverlayFS)
 
-### Optional — standalone Wi-Fi hotspot
+
+Because Astra is designed for headless use out in the field, turning it off means simply disconnecting the battery. Doing this on a normal Raspberry Pi will eventually corrupt the file system and ruin the microSD card.
+
+Since Astra sends pictures straight to your phone and keeps its logs in RAM, it doesn't actually need to write anything to the disk. You can make the entire filesystem **read-only**. This locks the SD card, making it 100% safe to pull the power plug at any time.
+
+**To lock the filesystem:**
+1. SSH into the Pi and open the configuration tool:
+   ```bash
+   sudo raspi-config
+   ```
+
+2. Navigate to **4 Performance Options** > **P2 Overlay File System**.
+3. Select **Yes** when asked to enable the overlay file system.
+4. Select **Yes** when asked to write-protect the boot partition.
+5. Exit the tool and select **Yes** to reboot.
+
+> **Important for future updates:** Once OverlayFS is enabled, the Pi acts like a locked physical cartridge. *Any* changes you make (like updating code, saving a new Wi-Fi password, or changing hotspot settings) will completely vanish the next time the power is cut. When you need to update Astra, run `sudo raspi-config`, disable the overlay, reboot, make your changes, and then re-enable it.
+---
+
+### Optional: standalone Wi-Fi hotspot
 
 Everything above works on your home Wi-Fi. Do this step only when you want to
 take the telescope somewhere with no network, and only **after** you have
@@ -378,7 +389,7 @@ sudo nmcli connection modify <your-home-ssid> connection.autoconnect no
 
 ---
 
-### Optional — for developers
+### Optional: for developers
 
 The camera layer is isolated, so everything else runs and is tested on an
 ordinary PC with no Pi hardware:
@@ -412,26 +423,6 @@ ASTRA_PORT=8080 python3 -m astra
 
 ---
 
-### Optional: Safe Battery Disconnect (OverlayFS)
-
-
-Because Astra is designed for headless use out in the field, turning it off means simply disconnecting the battery. Doing this on a normal Raspberry Pi will eventually corrupt the file system and ruin the microSD card.
-
-Since Astra sends pictures straight to your phone and keeps its logs in RAM, it doesn't actually need to write anything to the disk. You can make the entire filesystem **read-only**. This locks the SD card, making it 100% safe to pull the power plug at any time.
-
-**To lock the filesystem:**
-1. SSH into the Pi and open the configuration tool:
-   ```bash
-   sudo raspi-config
-   ```
-
-2. Navigate to **4 Performance Options** > **P2 Overlay File System**.
-3. Select **Yes** when asked to enable the overlay file system.
-4. Select **Yes** when asked to write-protect the boot partition.
-5. Exit the tool and select **Yes** to reboot.
-
-> **Important for future updates:** Once OverlayFS is enabled, the Pi acts like a locked physical cartridge. *Any* changes you make (like updating code, saving a new Wi-Fi password, or changing hotspot settings) will completely vanish the next time the power is cut. When you need to update Astra, run `sudo raspi-config`, disable the overlay, reboot, make your changes, and then re-enable it.
-
 ### Optional: Add a secondary wifi network for backup
 This is an optional step to add a second wifi network (like a smartphone hotspot) when the primary wifi network is out of range. 
 
@@ -457,7 +448,6 @@ sudo nmcli connection modify "SECOND_SSID" connection.autoconnect yes
 
 *Verification:* Run `nmcli connection show` to confirm the new `SECOND_SSID` entry appears in the list.
 
----
 
 ### Set Network Priority (Recommended)
 
