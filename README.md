@@ -410,41 +410,65 @@ sudo systemctl stop astra
 ASTRA_PORT=8080 python3 -m astra
 ```
 
-#### What changed from the original build
+---
 
-1. **The server would hang and need a reboot.** Waitress defaults to four worker
-   threads and each live video stream pins one. The old streaming loop could run
-   forever without ever writing to the socket, so a closed browser tab was never
-   noticed and its thread was never freed - a few page refreshes killed the
-   server. Now: 16 threads, streams capped in count and lifetime, the loop
-   always produces output, and snapshot polling is the default transport so the
-   common path uses only short-lived requests.
+### Optional: Safe Battery Disconnect (OverlayFS)
 
-2. **systemd gave up permanently.** `Restart=always` with `RestartSec=2` trips
-   systemd's default rate limit (5 starts in 10 s) and drops the unit into a
-   failed state until reboot. The unit now sets `StartLimitIntervalSec=0`, and
-   the camera retries internally with backoff instead of crashing the process.
 
-3. **Every preset was black except Deep Sky.** Two causes. 1000 µs at unity gain
-   is roughly 2.5 stops under correct lunar exposure for an f/6-f/8 Newtonian.
-   And `rpicam-vid --framerate 15` fixes the frame duration, which makes
-   libcamera clamp exposure to it - so the 500 000 µs "Deep Sky" preset was
-   really running at about 66 ms. Presets are now physical, Moon and Planets use
-   auto exposure with **spot metering**, and `FrameDurationLimits` is set
-   explicitly so long exposures actually happen.
+Because Astra is designed for headless use out in the field, turning it off means simply disconnecting the battery. Doing this on a normal Raspberry Pi will eventually corrupt the file system and ruin the microSD card.
 
-4. **The architecture fought the hardware.** 1080p MJPEG at 15 fps is 30-50
-   Mbit/s; a Zero 2 W access point delivers maybe 10-20. Every slider move
-   killed and respawned `rpicam-vid`, and frames were recovered by scanning for
-   JPEG markers in a Python `bytearray` - slow, and wrong, since EXIF thumbnails
-   contain nested markers. Now one long-lived Picamera2 pipeline feeds the
-   hardware JPEG encoder at 1296 x 972 / 10 fps: the OV5647's 2x2 binned mode,
-   which gives the **full field of view and 4x the light per pixel**, unlike the
-   1920 x 1080 mode that only uses a cropped centre of the sensor. Exposure,
-   gain, EV, AWB, saturation and zoom apply live via `set_controls()`; only a
-   flip needs a reconfigure.
+Since Astra sends pictures straight to your phone and keeps its logs in RAM, it doesn't actually need to write anything to the disk. You can make the entire filesystem **read-only**. This locks the SD card, making it 100% safe to pull the power plug at any time.
+
+**To lock the filesystem:**
+1. SSH into the Pi and open the configuration tool:
+   ```bash
+   sudo raspi-config
+   ```
+
+2. Navigate to **4 Performance Options** > **P2 Overlay File System**.
+3. Select **Yes** when asked to enable the overlay file system.
+4. Select **Yes** when asked to write-protect the boot partition.
+5. Exit the tool and select **Yes** to reboot.
+
+> **Important for future updates:** Once OverlayFS is enabled, the Pi acts like a locked physical cartridge. *Any* changes you make (like updating code, saving a new Wi-Fi password, or changing hotspot settings) will completely vanish the next time the power is cut. When you need to update Astra, run `sudo raspi-config`, disable the overlay, reboot, make your changes, and then re-enable it.
+
+### Optional: Add a secondary wifi network for backup
+This is an optional step to add a second wifi network (like a smartphone hotspot) when the primary wifi network is out of range. 
+
+> **Note on OverlayFS:** If you currently have OverlayFS (read-only mode) enabled, you must disable it via `sudo raspi-config` and reboot before running these commands, or the new Wi-Fi profile will disappear on the next reboot.
+
+1. **Create the network profile:**
+```bash
+sudo nmcli connection add type wifi con-name "SECOND_SSID" ifname wlan0 ssid "SECOND_SSID"
+
+```
+
+2. **Save the password:**
+```bash
+sudo nmcli connection modify "SECOND_SSID" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "SECOND_PASSWORD"
+
+```
+
+3. **Ensure auto-connect is active:**
+```bash
+sudo nmcli connection modify "SECOND_SSID" connection.autoconnect yes
+
+```
+
+*Verification:* Run `nmcli connection show` to confirm the new `SECOND_SSID` entry appears in the list.
 
 ---
+
+### Set Network Priority (Recommended)
+
+To ensure the Pi always prefers your primary home network whenever both are in range, set a higher priority for your primary Wi-Fi and a lower priority for the backup network:
+
+```bash
+sudo nmcli connection modify "PRIMARY_SSID" connection.autoconnect-priority 10
+sudo nmcli connection modify "SECOND_SSID" connection.autoconnect-priority 5
+
+```
+
 
 ## Credits
 
